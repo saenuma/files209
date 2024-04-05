@@ -48,9 +48,12 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/is-f209", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "yeah-f209")
+	r.HandleFunc("/is-files209", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "yeah-files209")
 	})
+
+	// files
+	r.HandleFunc("/write-file/{group}", writeFile)
 
 	r.Use(keyEnforcementMiddleware)
 

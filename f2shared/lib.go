@@ -2,6 +2,7 @@ package f2shared
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -104,4 +105,14 @@ func GetKeyStrPath() string {
 		panic(err)
 	}
 	return filepath.Join(rootPath, "f209.keyfile")
+}
+
+func PrintError(w http.ResponseWriter, err error) {
+	fmt.Printf("%+v\n", err)
+	debug := GetSetting("debug")
+	if debug == "true" {
+		http.Error(w, fmt.Sprintf("%+v", err), http.StatusInternalServerError)
+	} else {
+		http.Error(w, fmt.Sprintf("%s", err), http.StatusInternalServerError)
+	}
 }
