@@ -79,6 +79,59 @@ func writeFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "ok")
 }
 
+func deleteFile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	groupName := vars["group"]
+	fileName := r.FormValue("name")
+	rootPath, _ := f2shared.GetRootPath()
+
+	err := nameValidate(groupName)
+	if err != nil {
+		f2shared.PrintError(w, err)
+		return
+	}
+
+	createTableMutexIfNecessary(groupName)
+	groupMutexes[groupName].Lock()
+	defer groupMutexes[groupName].Unlock()
+
+	dataF1Path := filepath.Join(rootPath, groupName+".flaa1")
+	// update flaa1 file by rewriting it.
+	elemsMap, err := ParseDataF1File(dataF1Path)
+	if err != nil {
+		f2shared.PrintError(w, err)
+		return
+	}
+
+	dataLumpPath := filepath.Join(rootPath, groupName+".flaa2")
+	begin := elemsMap[fileName].DataBegin
+	end := elemsMap[fileName].DataEnd
+
+	nullData := make([]byte, end-begin)
+
+	if f2shared.DoesPathExists(dataLumpPath) {
+		dataLumpHandle, err := os.OpenFile(dataLumpPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
+		if err != nil {
+			f2shared.PrintError(w, err)
+			return
+		}
+		defer dataLumpHandle.Close()
+
+		dataLumpHandle.WriteAt(nullData, begin)
+	}
+
+	// rewrite index
+	err = RewriteF1File(groupName, elemsMap)
+	if err != nil {
+		f2shared.PrintError(w, err)
+		return
+
+	}
+
+	fmt.Fprint(w, "ok")
+
+}
+
 func ParseDataF1File(path string) (map[string]DataF1Elem, error) {
 	ret := make(map[string]DataF1Elem, 0)
 	rawF1File, err := os.ReadFile(path)
