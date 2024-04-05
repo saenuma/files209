@@ -1,3 +1,3 @@
 # cli
 
-cli provides a terminal interface to a flaarum server.
+cli provides a terminal interface to a files209 server.
