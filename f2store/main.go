@@ -58,6 +58,9 @@ func main() {
 	r.HandleFunc("/list-files/{group}", listFiles)
 	r.HandleFunc("/delete-file/{group}/{name}", deleteFile)
 
+	// groups
+	r.HandleFunc("/list-groups", listGroups)
+
 	r.Use(keyEnforcementMiddleware)
 
 	port := f2shared.GetSetting("port")

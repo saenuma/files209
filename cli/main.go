@@ -77,7 +77,10 @@ File(s) Commands:
   wf    Writes a file to files209 server. Expects a groupname and a filepath
   rf    Reads a file from files209 server. Expects a groupname and a filename
   lf    List files. Expects only a groupname.
-	df    Delete Files. Expects a groupname and a filename
+  df    Delete Files. Expects a groupname and a filename
+
+Groups Commands:
+  lg    List Groups. Expects no arguments
 
 			`)
 
@@ -137,6 +140,18 @@ File(s) Commands:
 		}
 
 		fmt.Println(out)
+
+	case "lg":
+		groups, err := cl.ListGroups()
+		if err != nil {
+			color.Red.Println(err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Groups:")
+		for _, g := range groups {
+			fmt.Println("  ", g)
+		}
 
 	default:
 		color.Red.Println("Unexpected command. Run the cli with --help to find out the supported commands.")
