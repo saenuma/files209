@@ -43,18 +43,17 @@ func init() {
 }
 
 type Client struct {
-	Addr     string
-	KeyStr   string
-	ProjName string
+	Addr   string
+	KeyStr string
 }
 
-func NewClient(ip, keyStr, projName string) Client {
-	return Client{"https://" + ip + ":31822/", keyStr, projName}
+func NewClient(ip, keyStr string) Client {
+	return Client{"https://" + ip + ":31822/", keyStr}
 }
 
 // Used whenever you changed the default port
-func NewClientCustomPort(ip, keyStr, projName string, port int) Client {
-	return Client{"https://" + ip + fmt.Sprintf(":%d/", port), keyStr, projName}
+func NewClientCustomPort(ip, keyStr string, port int) Client {
+	return Client{"https://" + ip + fmt.Sprintf(":%d/", port), keyStr}
 }
 
 func (cl *Client) Ping() error {

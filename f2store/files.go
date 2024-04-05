@@ -82,7 +82,7 @@ func writeFile(w http.ResponseWriter, r *http.Request) {
 func deleteFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	groupName := vars["group"]
-	fileName := r.FormValue("name")
+	fileName := vars["name"]
 	rootPath, _ := f2shared.GetRootPath()
 
 	err := nameValidate(groupName)
