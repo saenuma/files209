@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -130,6 +131,29 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, "ok")
 
+}
+
+func listFiles(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	groupName := vars["group"]
+
+	rootPath, _ := f2shared.GetRootPath()
+	dataF1Path := filepath.Join(rootPath, groupName+".flaa1")
+	// update flaa1 file by rewriting it.
+	elemsMap, err := ParseDataF1File(dataF1Path)
+	if err != nil {
+		f2shared.PrintError(w, err)
+		return
+	}
+
+	ret := make(map[string]int64)
+
+	for _, elem := range elemsMap {
+		ret[elem.DataKey] = elem.DataEnd - elem.DataBegin
+	}
+
+	retBytes, _ := json.Marshal(ret)
+	fmt.Fprint(w, retBytes)
 }
 
 func ParseDataF1File(path string) (map[string]DataF1Elem, error) {
