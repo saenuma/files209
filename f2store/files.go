@@ -80,6 +80,55 @@ func writeFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "ok")
 }
 
+func readFile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	groupName := vars["group"]
+	fileName := vars["name"]
+	rootPath, _ := f2shared.GetRootPath()
+
+	err := nameValidate(groupName)
+	if err != nil {
+		f2shared.PrintError(w, err)
+		return
+	}
+
+	createTableMutexIfNecessary(groupName)
+	groupMutexes[groupName].Lock()
+	defer groupMutexes[groupName].Unlock()
+
+	dataF1Path := filepath.Join(rootPath, groupName+".flaa1")
+	// update flaa1 file by rewriting it.
+	elemsMap, err := ParseDataF1File(dataF1Path)
+	if err != nil {
+		f2shared.PrintError(w, err)
+		return
+	}
+
+	dataLumpPath := filepath.Join(rootPath, groupName+".flaa2")
+	if _, ok := elemsMap[fileName]; !ok {
+		f2shared.PrintError(w, errors.New("file doesn't exist"))
+		return
+	}
+	begin := elemsMap[fileName].DataBegin
+	end := elemsMap[fileName].DataEnd
+
+	retBytes := make([]byte, end-begin)
+	var ret string
+	if f2shared.DoesPathExists(dataLumpPath) {
+		dataLumpHandle, err := os.OpenFile(dataLumpPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
+		if err != nil {
+			f2shared.PrintError(w, err)
+			return
+		}
+		defer dataLumpHandle.Close()
+
+		dataLumpHandle.ReadAt(retBytes, begin)
+		ret = base64.StdEncoding.EncodeToString(retBytes)
+	}
+
+	fmt.Fprint(w, ret)
+}
+
 func deleteFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	groupName := vars["group"]

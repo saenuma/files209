@@ -54,6 +54,7 @@ func main() {
 
 	// files
 	r.HandleFunc("/write-file/{group}", writeFile)
+	r.HandleFunc("/read-file/{group}", readFile)
 	r.HandleFunc("/list-files/{group}", listFiles)
 	r.HandleFunc("/delete-file/{group}/{name}", deleteFile)
 
