@@ -60,6 +60,7 @@ func main() {
 
 	// groups
 	r.HandleFunc("/list-groups", listGroups)
+	r.HandleFunc("/delete-group", deleteGroup)
 
 	r.Use(keyEnforcementMiddleware)
 

@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"github.com/saenuma/files209/f2shared"
 )
 
@@ -29,4 +31,17 @@ func listGroups(w http.ResponseWriter, r *http.Request) {
 
 	retBytes, _ := json.Marshal(groups)
 	fmt.Fprint(w, retBytes)
+}
+
+func deleteGroup(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	groupName := vars["group"]
+
+	rootPath, _ := f2shared.GetRootPath()
+
+	delete(groupMutexes, groupName)
+	os.RemoveAll(filepath.Join(rootPath, groupName+".flaa1"))
+	os.RemoveAll(filepath.Join(rootPath, groupName+".flaa2"))
+
+	fmt.Fprint(w, "ok")
 }

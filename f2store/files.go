@@ -93,8 +93,8 @@ func readFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	createTableMutexIfNecessary(groupName)
-	groupMutexes[groupName].Lock()
-	defer groupMutexes[groupName].Unlock()
+	groupMutexes[groupName].RLock()
+	defer groupMutexes[groupName].RUnlock()
 
 	dataF1Path := filepath.Join(rootPath, groupName+".flaa1")
 	// update flaa1 file by rewriting it.
@@ -185,6 +185,10 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 func listFiles(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	groupName := vars["group"]
+
+	createTableMutexIfNecessary(groupName)
+	groupMutexes[groupName].RLock()
+	defer groupMutexes[groupName].RUnlock()
 
 	rootPath, _ := f2shared.GetRootPath()
 	dataF1Path := filepath.Join(rootPath, groupName+".flaa1")

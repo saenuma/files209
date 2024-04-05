@@ -35,3 +35,27 @@ func (cl *Client) ListGroups() ([]string, error) {
 		return nil, ServerError{string(body)}
 	}
 }
+
+func (cl *Client) DeleteGroup(groupName string) error {
+	urlValues := url.Values{}
+	urlValues.Add("key-str", cl.KeyStr)
+
+	resp, err := httpCl.PostForm(fmt.Sprintf("%sdelete-group/%s", cl.Addr, groupName), urlValues)
+	if err != nil {
+		return ConnError{err.Error()}
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ConnError{err.Error()}
+	}
+
+	if resp.StatusCode == 200 {
+		return nil
+	} else if resp.StatusCode == 400 {
+		return ValidationError{string(body)}
+	} else {
+		return ServerError{string(body)}
+	}
+
+}

@@ -81,10 +81,15 @@ File(s) Commands:
 
 Groups Commands:
   lg    List Groups. Expects no arguments
+  dg    Delete Group. Expects only the name of the group
 
 			`)
 
 	case "pwd":
+		if len(os.Args) != 2 {
+			color.Red.Println("Expecting no arugments")
+			os.Exit(1)
+		}
 		p, err := f2shared.GetRootPath()
 		if err != nil {
 			color.Red.Println(err)
@@ -93,6 +98,10 @@ Groups Commands:
 		fmt.Println(p)
 
 	case "wf":
+		if len(os.Args) != 4 {
+			color.Red.Println("Expecting the name of the group and the filepath only")
+			os.Exit(1)
+		}
 		groupName := os.Args[2]
 		fileName := filepath.Base(os.Args[3])
 		dataBytes, err := os.ReadFile(os.Args[3])
@@ -107,6 +116,11 @@ Groups Commands:
 		}
 
 	case "rf":
+		if len(os.Args) != 4 {
+			color.Red.Println("Expecting the name of the group and the file name only")
+			os.Exit(1)
+		}
+
 		groupName := os.Args[2]
 		fileName := os.Args[3]
 
@@ -122,6 +136,10 @@ Groups Commands:
 		fmt.Printf("file written to '%s'\n", outPath)
 
 	case "df":
+		if len(os.Args) != 4 {
+			color.Red.Println("Expecting the name of the group and the file name only")
+			os.Exit(1)
+		}
 		groupName := os.Args[2]
 		fileName := os.Args[3]
 
@@ -132,6 +150,10 @@ Groups Commands:
 		}
 
 	case "lf":
+		if len(os.Args) != 3 {
+			color.Red.Println("Expecting only the name of the group")
+			os.Exit(1)
+		}
 		groupName := os.Args[2]
 		out, err := cl.ListFiles(groupName)
 		if err != nil {
@@ -142,6 +164,10 @@ Groups Commands:
 		fmt.Println(out)
 
 	case "lg":
+		if len(os.Args) != 2 {
+			color.Red.Println("Expecting no arugments")
+			os.Exit(1)
+		}
 		groups, err := cl.ListGroups()
 		if err != nil {
 			color.Red.Println(err)
@@ -151,6 +177,17 @@ Groups Commands:
 		fmt.Println("Groups:")
 		for _, g := range groups {
 			fmt.Println("  ", g)
+		}
+
+	case "dg":
+		if len(os.Args) != 3 {
+			color.Red.Println("Expecting only the name of the group")
+			os.Exit(1)
+		}
+		err := cl.DeleteGroup(os.Args[2])
+		if err != nil {
+			color.Red.Println(err)
+			os.Exit(1)
 		}
 
 	default:
