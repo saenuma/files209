@@ -7,7 +7,7 @@ store on top of ext4 using a new archive.
 
 ## Production Installation Instructions
 
-1.  Launch a **Ubuntu 22.04** server and ssh into it.
+1.  Launch a **Ubuntu 24.04** server and ssh into it.
 1.  Install with the command **sudo snap install files209**
 1.  Generate ssl keys by running **sudo files209.genssl**
 1.  Make production ready by running **sudo files209.prod mpr**
