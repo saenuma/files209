@@ -14,12 +14,6 @@ func createTableMutexIfNecessary(groupName string) {
 	}
 }
 
-type DataF1Elem struct {
-	DataKey   string
-	DataBegin int64
-	DataEnd   int64
-}
-
 func nameValidate(name string) error {
 	if strings.Contains(name, ".") || strings.Contains(name, " ") || strings.Contains(name, "\t") ||
 		strings.Contains(name, "\n") || strings.Contains(name, ":") || strings.Contains(name, "/") ||

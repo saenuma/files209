@@ -34,6 +34,9 @@ Supported Commands:
 
   mpr       Make production ready. It also creates a key string.
 
+  trim      Trim large files209 files. This is needed after months of using this files store.
+            It expects a groupName
+
       `, dataPath)
 
 	case "r":
@@ -104,6 +107,21 @@ Supported Commands:
 		exec.Command("openssl", "req", "-x509", "-newkey", "rsa:4096", "-keyout", keyPath,
 			"-out", crtPath, "-sha256", "-days", "3650", "-nodes", "-subj",
 			"/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname").Run()
+		fmt.Println("ok")
+
+	case "trim":
+		if len(os.Args) != 3 {
+			color.Red.Println(`'trim' command expects a groupName `)
+			os.Exit(1)
+		}
+
+		groupName := os.Args[2]
+		err := trimF209Files(groupName)
+		if err != nil {
+			color.Red.Println("Error triming:\n" + err.Error())
+			os.Exit(1)
+		}
+
 		fmt.Println("ok")
 
 	default:
