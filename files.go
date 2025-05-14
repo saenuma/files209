@@ -85,6 +85,7 @@ func (cl *Client) DeleteFile(groupName, fileName string) error {
 
 }
 
+// returns of list of files to sizes
 func (cl *Client) ListFiles(groupName string) (map[string]int64, error) {
 	urlValues := url.Values{}
 	urlValues.Add("key-str", cl.KeyStr)

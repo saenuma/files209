@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/mux"
-	"github.com/saenuma/files209/f2shared"
+	"github.com/saenuma/files209/internal"
 	"github.com/saenuma/zazabul"
 )
 
@@ -19,27 +19,27 @@ func main() {
 	groupMutexes = make(map[string]*sync.RWMutex)
 
 	// initialize
-	dataPath, err := f2shared.GetRootPath()
+	dataPath, err := internal.GetRootPath()
 	if err != nil {
 		panic(err)
 	}
 
 	// create default group
 	firstProjPath := filepath.Join(dataPath, "first_group")
-	if !f2shared.DoesPathExists(firstProjPath) {
+	if !internal.DoesPathExists(firstProjPath) {
 		err = os.MkdirAll(firstProjPath, 0777)
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	confPath, err := f2shared.GetConfigPath()
+	confPath, err := internal.GetConfigPath()
 	if err != nil {
 		panic(err)
 	}
 
-	if !f2shared.DoesPathExists(confPath) {
-		conf, err := zazabul.ParseConfig(f2shared.RootConfigTemplate)
+	if !internal.DoesPathExists(confPath) {
+		conf, err := zazabul.ParseConfig(internal.RootConfigTemplate)
 		if err != nil {
 			panic(err)
 		}
@@ -64,12 +64,12 @@ func main() {
 
 	r.Use(keyEnforcementMiddleware)
 
-	port := f2shared.GetSetting("port")
+	port := internal.GetSetting("port")
 
 	fmt.Printf("Serving on port: %s\n", port)
 
-	err = http.ListenAndServeTLS(fmt.Sprintf(":%s", port), f2shared.G("https-server.crt"),
-		f2shared.G("https-server.key"), r)
+	err = http.ListenAndServeTLS(fmt.Sprintf(":%s", port), internal.G("https-server.crt"),
+		internal.G("https-server.key"), r)
 	if err != nil {
 		panic(err)
 	}
@@ -78,12 +78,12 @@ func main() {
 
 func keyEnforcementMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		inProd := f2shared.GetSetting("in_production")
+		inProd := internal.GetSetting("in_production")
 		if inProd == "" {
 			panic(errors.New("have you installed and launched files209.fstore"))
 		} else if inProd == "true" {
 			keyStr := r.FormValue("key-str")
-			keyPath := f2shared.GetKeyStrPath()
+			keyPath := internal.GetKeyStrPath()
 			raw, err := os.ReadFile(keyPath)
 			if err != nil {
 				http.Error(w, "Improperly Configured Server", http.StatusInternalServerError)

@@ -1,4 +1,4 @@
-package f2shared
+package internal
 
 import (
 	crand "crypto/rand"

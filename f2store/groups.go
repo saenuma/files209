@@ -9,15 +9,15 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/saenuma/files209/f2shared"
+	"github.com/saenuma/files209/internal"
 )
 
 func listGroups(w http.ResponseWriter, r *http.Request) {
-	rootPath, _ := f2shared.GetRootPath()
+	rootPath, _ := internal.GetRootPath()
 
 	dirFIs, err := os.ReadDir(rootPath)
 	if err != nil {
-		f2shared.PrintError(w, err)
+		internal.PrintError(w, err)
 		return
 	}
 
@@ -37,7 +37,7 @@ func deleteGroup(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	groupName := vars["group"]
 
-	rootPath, _ := f2shared.GetRootPath()
+	rootPath, _ := internal.GetRootPath()
 
 	delete(groupMutexes, groupName)
 	os.RemoveAll(filepath.Join(rootPath, groupName+".flaa1"))

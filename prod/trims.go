@@ -6,17 +6,17 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
-	"github.com/saenuma/files209/f2shared"
+	"github.com/saenuma/files209/internal"
 )
 
 func trimF209Files(groupName string) error {
 
-	rootPath, _ := f2shared.GetRootPath()
+	rootPath, _ := internal.GetRootPath()
 	tablePath := filepath.Join(rootPath, groupName)
 	tmpGroupName := groupName + "_trim_tmp"
 	workingTablePath := filepath.Join(rootPath, tmpGroupName)
 
-	if f2shared.DoesPathExists(workingTablePath) {
+	if internal.DoesPathExists(workingTablePath) {
 		os.RemoveAll(workingTablePath)
 	}
 
@@ -24,7 +24,7 @@ func trimF209Files(groupName string) error {
 
 	refF1Path := filepath.Join(tablePath, groupName+".flaa1")
 	tmpF2Path := filepath.Join(rootPath, tmpGroupName+".flaa2")
-	elemsMap, err := f2shared.ParseDataF1File(refF1Path)
+	elemsMap, err := internal.ParseDataF1File(refF1Path)
 	if err != nil {
 		return errors.Wrap(err, "f2shared error")
 	}
@@ -37,7 +37,7 @@ func trimF209Files(groupName string) error {
 		end := elem.DataEnd
 
 		fileBytes := make([]byte, end-begin)
-		if f2shared.DoesPathExists(dataLumpPath) {
+		if internal.DoesPathExists(dataLumpPath) {
 			dataLumpHandle, err := os.OpenFile(dataLumpPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 			if err != nil {
 				fmt.Println(err)
@@ -67,8 +67,8 @@ func trimF209Files(groupName string) error {
 		newBegin := size
 		newEnd := int64(len(fileBytes)) + size
 
-		newDataElem := f2shared.DataF1Elem{DataKey: elem.DataKey, DataBegin: newBegin, DataEnd: newEnd}
-		err = f2shared.AppendDataF1File(tmpGroupName, newDataElem)
+		newDataElem := internal.DataF1Elem{DataKey: elem.DataKey, DataBegin: newBegin, DataEnd: newEnd}
+		err = internal.AppendDataF1File(tmpGroupName, newDataElem)
 		if err != nil {
 			fmt.Println(err)
 			continue

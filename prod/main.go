@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/gookit/color"
-	"github.com/saenuma/files209/f2shared"
+	"github.com/saenuma/files209/internal"
 	"github.com/saenuma/zazabul"
 )
 
 func main() {
-	dataPath, _ := f2shared.GetRootPath()
+	dataPath, _ := internal.GetRootPath()
 	if len(os.Args) < 2 {
 		color.Red.Println("expected a command. Open help to view commands.")
 		os.Exit(1)
@@ -40,7 +40,7 @@ Supported Commands:
       `, dataPath)
 
 	case "r":
-		keyPath := f2shared.GetKeyStrPath()
+		keyPath := internal.GetKeyStrPath()
 		raw, err := os.ReadFile(keyPath)
 		if err != nil {
 			color.Red.Printf("Error reading key string path.\nError:%s\n", err)
@@ -49,8 +49,8 @@ Supported Commands:
 		fmt.Println(string(raw))
 
 	case "c":
-		keyPath := f2shared.GetKeyStrPath()
-		randomString := f2shared.GenerateSecureRandomString(50)
+		keyPath := internal.GetKeyStrPath()
+		randomString := internal.GenerateSecureRandomString(50)
 
 		err := os.WriteFile(keyPath, []byte(randomString), 0777)
 		if err != nil {
@@ -60,9 +60,9 @@ Supported Commands:
 		fmt.Print(randomString)
 
 	case "mpr":
-		keyPath := f2shared.GetKeyStrPath()
-		if !f2shared.DoesPathExists(keyPath) {
-			randomString := f2shared.GenerateSecureRandomString(50)
+		keyPath := internal.GetKeyStrPath()
+		if !internal.DoesPathExists(keyPath) {
+			randomString := internal.GenerateSecureRandomString(50)
 
 			err := os.WriteFile(keyPath, []byte(randomString), 0777)
 			if err != nil {
@@ -72,7 +72,7 @@ Supported Commands:
 
 		}
 
-		confPath, err := f2shared.GetConfigPath()
+		confPath, err := internal.GetConfigPath()
 		if err != nil {
 			panic(err)
 		}
@@ -100,7 +100,7 @@ Supported Commands:
 		}
 
 	case "genssl":
-		rootPath, _ := f2shared.GetRootPath()
+		rootPath, _ := internal.GetRootPath()
 		keyPath := filepath.Join(rootPath, "https-server.key")
 		crtPath := filepath.Join(rootPath, "https-server.crt")
 

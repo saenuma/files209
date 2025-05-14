@@ -9,7 +9,7 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/saenuma/files209"
-	"github.com/saenuma/files209/f2shared"
+	"github.com/saenuma/files209/internal"
 )
 
 const VersionFormat = "20060102T150405MST"
@@ -22,13 +22,13 @@ func main() {
 	}
 
 	var keyStr string
-	inProd := f2shared.GetSetting("in_production")
+	inProd := internal.GetSetting("in_production")
 	if inProd == "" {
 		color.Red.Println("unexpected error. Have you installed  and launched files209?")
 		os.Exit(1)
 	}
 	if inProd == "true" {
-		keyStrPath := f2shared.GetKeyStrPath()
+		keyStrPath := internal.GetKeyStrPath()
 		raw, err := os.ReadFile(keyStrPath)
 		if err != nil {
 			color.Red.Println(err)
@@ -38,7 +38,7 @@ func main() {
 	} else {
 		keyStr = "not-yet-set"
 	}
-	port := f2shared.GetSetting("port")
+	port := internal.GetSetting("port")
 	if port == "" {
 		color.Red.Println("unexpected error. Have you installed  and launched files209?")
 		os.Exit(1)
@@ -51,7 +51,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if portInt != f2shared.PORT {
+	if portInt != internal.PORT {
 		cl = files209.NewClientCustomPort("127.0.0.1", keyStr, portInt)
 	} else {
 		cl = files209.NewClient("127.0.0.1", keyStr)
@@ -90,7 +90,7 @@ Groups Commands:
 			color.Red.Println("Expecting no arugments")
 			os.Exit(1)
 		}
-		p, err := f2shared.GetRootPath()
+		p, err := internal.GetRootPath()
 		if err != nil {
 			color.Red.Println(err)
 			os.Exit(1)
