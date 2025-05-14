@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gorilla/mux"
 	"github.com/saenuma/files209/internal"
 )
 
@@ -34,8 +33,7 @@ func listGroups(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteGroup(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	groupName := vars["group"]
+	groupName := r.PathValue("group")
 
 	rootPath, _ := internal.GetRootPath()
 

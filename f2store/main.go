@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/gorilla/mux"
 	"github.com/saenuma/files209/internal"
 	"github.com/saenuma/zazabul"
 )
@@ -46,30 +45,26 @@ func main() {
 		conf.Write(confPath)
 	}
 
-	r := mux.NewRouter()
-
-	r.HandleFunc("/is-files209", func(w http.ResponseWriter, r *http.Request) {
+	http.Handle("/is-files209", Q(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "yeah-files209")
-	})
+	}))
 
 	// files
-	r.HandleFunc("/write-file/{group}", writeFile)
-	r.HandleFunc("/read-file/{group}", readFile)
-	r.HandleFunc("/list-files/{group}", listFiles)
-	r.HandleFunc("/delete-file/{group}/{name}", deleteFile)
+	http.Handle("/write-file/{group}", Q(writeFile))
+	http.Handle("/read-file/{group}", Q(readFile))
+	http.Handle("/list-files/{group}", Q(listFiles))
+	http.Handle("/delete-file/{group}/{name}", Q(deleteFile))
 
 	// groups
-	r.HandleFunc("/list-groups", listGroups)
-	r.HandleFunc("/delete-group", deleteGroup)
-
-	r.Use(keyEnforcementMiddleware)
+	http.Handle("/list-groups", Q(listGroups))
+	http.Handle("/delete-group", Q(deleteGroup))
 
 	port := internal.GetSetting("port")
 
 	fmt.Printf("Serving on port: %s\n", port)
 
 	err = http.ListenAndServeTLS(fmt.Sprintf(":%s", port), internal.G("https-server.crt"),
-		internal.G("https-server.key"), r)
+		internal.G("https-server.key"), nil)
 	if err != nil {
 		panic(err)
 	}
@@ -101,4 +96,8 @@ func keyEnforcementMiddleware(next http.Handler) http.Handler {
 		}
 
 	})
+}
+
+func Q(f func(w http.ResponseWriter, r *http.Request)) http.Handler {
+	return keyEnforcementMiddleware(http.HandlerFunc(f))
 }

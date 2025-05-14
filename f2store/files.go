@@ -8,14 +8,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"github.com/saenuma/files209/internal"
 )
 
 func writeFile(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	groupName := vars["group"]
+	groupName := r.PathValue("group")
 	dataB64 := r.FormValue("dataB64")
 	fileName := r.FormValue("name")
 	rootPath, _ := internal.GetRootPath()
@@ -79,9 +77,8 @@ func writeFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func readFile(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	groupName := vars["group"]
-	fileName := vars["name"]
+	groupName := r.PathValue("group")
+	fileName := r.PathValue("name")
 	rootPath, _ := internal.GetRootPath()
 
 	err := nameValidate(groupName)
@@ -127,9 +124,8 @@ func readFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteFile(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	groupName := vars["group"]
-	fileName := vars["name"]
+	groupName := r.PathValue("group")
+	fileName := r.PathValue("name")
 	rootPath, _ := internal.GetRootPath()
 
 	err := nameValidate(groupName)
@@ -180,8 +176,7 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func listFiles(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	groupName := vars["group"]
+	groupName := r.PathValue("group")
 
 	createTableMutexIfNecessary(groupName)
 	groupMutexes[groupName].RLock()
