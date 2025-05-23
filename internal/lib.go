@@ -28,6 +28,12 @@ in_production: false
 // changing the port can be used to hide your database during production
 port: 31822
 
+// data_folder is the folder in /var/snap/files209/common containing files209's generated
+// data. This is to support using files209 with mounted disks.
+// default is / . meaning /var/snap/files209/common
+// use paths relative to /var/snap/files209/common
+data_folder: /
+
 `
 
 func DoesPathExists(p string) bool {
@@ -37,6 +43,8 @@ func DoesPathExists(p string) bool {
 	return true
 }
 
+
+
 func GetRootPath() (string, error) {
 	hd, err := os.UserHomeDir()
 	if err != nil {
@@ -44,14 +52,28 @@ func GetRootPath() (string, error) {
 	}
 
 	var dd string
-	dd = os.Getenv("SNAP_COMMON")
 	if strings.HasPrefix(dd, "/var/snap/go") || dd == "" {
 		dd = filepath.Join(hd, "files209")
 		os.MkdirAll(dd, 0777)
+	} else {
+		dd = os.Getenv("SNAP_COMMON")
+
+		confPath := filepath.Join(dd, "files209.zconf")
+		conf, err := zazabul.LoadConfigFile(confPath)
+		if err != nil {
+			fmt.Printf("%+v\n", err)
+			return dd, err
+		}
+
+		dataFolderSetting := conf.Get("data_folder")
+		if dataFolderSetting != "/" {
+			dd = filepath.Join(dd, dataFolderSetting)
+		}
 	}
 
 	return dd, nil
 }
+
 
 func GetConfigPath() (string, error) {
 	rootPath, err := GetRootPath()
